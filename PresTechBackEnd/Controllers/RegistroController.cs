@@ -89,7 +89,6 @@ namespace PresTechBackEnd.Controllers
             return BadRequest("Rol inválido. Debe ser 'prestamista' o 'prestatario'.");
         }
 
-
         private static string Hash(string input)
         {
             using var sha = System.Security.Cryptography.SHA256.Create();

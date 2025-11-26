@@ -1,6 +1,6 @@
 ﻿namespace PresTechBackEnd.DTO
 {
-    public class TransaccionPrestamistaDTO
+    public class TransaccionRolesDTO
     {
 
         public int TransaccionId { get; set; }

@@ -163,7 +163,6 @@ namespace PresTechBackEnd.Controllers
 
             prestamo.FechaProxPago = CalcularProximaFechaPago(prestamo.FechaProxPago, prestamo.OfertaPrestamo.Frecuencia);
 
-            // Si ya queda en 0 → marcar como pagado
             if (prestamo.SaldoRestante <= 0 || prestamo.CuotasRestantes <= 0)
             {
                 prestamo.SaldoRestante = 0;
@@ -191,13 +190,21 @@ namespace PresTechBackEnd.Controllers
             {
                 var transacciones = await _context.Transacciones
                     .Where(t => t.Prestamo != null && t.Prestamo.PrestatarioId == prestatarioId)
-                    .Select(t => new TransaccionDTO
+                    .Select(t => new TransaccionRolesDTO
                     {
                         TransaccionId = t.TransaccionId,
                         FechaPago = t.FechaPago,
-                        MontoPagado = t.Monto,
-                        TipoPago = t.TipoTransaccion,
-                        PrestamoId = t.PrestamoId
+                        Monto = t.Monto,
+                        TipoTransaccion = t.TipoTransaccion,
+                        PrestamoId = t.PrestamoId,
+                        OfertaPrestamoId = t.Prestamo.OfertaPrestamoId,
+                        Categoria = t.Prestamo.OfertaPrestamo.Categoria,
+                        ClienteNombre = t.Prestamo.Prestatario.Persona.Nombre,
+                        ClienteDocumento = t.Prestamo.Prestatario.Persona.Identificacion,
+                        ClienteTelefono = t.Prestamo.Prestatario.Persona.Telefono,
+                        ClienteEmail = t.Prestamo.Prestatario.Persona.Email,
+                        SaldoRestante = t.Prestamo.SaldoRestante,
+
                     })
                     .OrderByDescending(t => t.FechaPago)
                     .ToListAsync();
@@ -213,7 +220,6 @@ namespace PresTechBackEnd.Controllers
         [HttpGet("resumen-prestatario/{prestatarioId}")]
         public async Task<IActionResult> ObtenerResumenPrestatario(int prestatarioId)
         {
-            // Obtener transacciones del prestatario
             var transacciones = await _context.Transacciones
                 .Include(t => t.Prestamo)
                 .Where(t => t.Prestamo.PrestatarioId == prestatarioId)
@@ -238,11 +244,11 @@ namespace PresTechBackEnd.Controllers
         }
 
         [HttpGet("/prestamista-transacciones/{prestamistaId}")]
-        public async Task<ActionResult<List<TransaccionPrestamistaDTO>>> ObtenerTransaccionesPrestamista(int prestamistaId)
+        public async Task<ActionResult<List<TransaccionRolesDTO>>> ObtenerTransaccionesPrestamista(int prestamistaId)
         {
             var transacciones = await _context.Transacciones
             .Where(t => t.Prestamo.OfertaPrestamo.PrestamistaId == prestamistaId)
-            .Select(t => new TransaccionPrestamistaDTO
+            .Select(t => new TransaccionRolesDTO
             {
                 TransaccionId = t.TransaccionId,
                 PrestamoId = t.PrestamoId,
