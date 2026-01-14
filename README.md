@@ -65,3 +65,7 @@ Ejecutar la Aplicación:
     dotnet run
    ```
 La API estará disponible en la URL especificada en la configuración.
+
+## 👨‍💻 AUTORES
+
+Jorge Iván Ramos Murgas
